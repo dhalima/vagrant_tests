@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# rpm -Uvh http://mirror.webtatic.com/yum/el5/latest.rpm
+# rpm -Uvh http://dl.iuscommunity.org/pub/ius/stable/CentOS/5/x86_64/ius-release-1.0-11.ius.centos5.noarch.rpm
+# rpm -Uvh http://dl.iuscommunity.org/pub/ius/stable/CentOS/5/x86_64/epel-release-5-4.noarch.rpm
+
 function install_apache() {
 #    yum install apache-2.2.3
     yum -y install httpd-2.2.3-82.el5.centos
@@ -8,14 +12,11 @@ function install_apache() {
 
 function install_mysql() {
 #    yum install mysql-5.5.16
-    rpm -Uvh http://mirror.webtatic.com/yum/el5/latest.rpm
-
-    yum -y install mysql55w mysql55w-server
+    yum -y install mysql55.1-12.el5
 }
 
 function install_php() {
     rpm -Uvh http://dl.iuscommunity.org/pub/ius/stable/CentOS/5/x86_64/ius-release-1.0-11.ius.centos5.noarch.rpm
-    rpm -Uvh http://dl.iuscommunity.org/pub/ius/stable/CentOS/5/x86_64/epel-release-5-4.noarch.rpm
 
 # http://thepoch.com/2013/installing-php-5.2-on-centos-5-using-the-ius-community-project-repository.html
 #    yum install php-5.2.14
