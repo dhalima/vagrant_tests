@@ -20,8 +20,9 @@ function install_php() {
 
     cd -
 
+# http://thepoch.com/2013/installing-php-5.2-on-centos-5-using-the-ius-community-project-repository.html
 #    yum install php-5.2.14
-    yum -y install php52-5.2.17-6.ius.centos5
+    yum --enablerepo=ius-archive -y install php52-5.2.17-6.ius.centos5
 }
 
 function install_apc() {

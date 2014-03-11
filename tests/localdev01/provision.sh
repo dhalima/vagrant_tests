@@ -1,6 +1,8 @@
 #!/bin/bash
 
-. ../_install_rh.sh
+echo $0
+
+. /vagrant/_rh_provision_functions.sh
 
 install_apache
 install_mysql
