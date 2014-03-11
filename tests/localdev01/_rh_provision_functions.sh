@@ -3,26 +3,23 @@
 function install_apache() {
 #    yum install apache-2.2.3
     yum -y install httpd-2.2.3-82.el5.centos
+    /sbin/chkconfig httpd on
 }
 
 function install_mysql() {
 #    yum install mysql-5.5.16
-    yum -y install mysql55-mysql-5.5.32-3.el5 mysql55-mysql-server-5.5.32-3.el5
+    rpm -Uvh http://mirror.webtatic.com/yum/el5/latest.rpm
+
+    yum -y install mysql55w mysql55w-server
 }
 
 function install_php() {
-    cd /tmp
-
-    wget http://dl.iuscommunity.org/pub/ius/stable/CentOS/5/x86_64/ius-release-1.0-11.ius.centos5.noarch.rpm
-    wget http://dl.iuscommunity.org/pub/ius/stable/CentOS/5/x86_64/epel-release-5-4.noarch.rpm
-
-    rpm -Uvh ius-release-1.0-11.ius.centos5.noarch.rpm epel-release-5-4.noarch.rpm
-
-    cd -
+    rpm -Uvh http://dl.iuscommunity.org/pub/ius/stable/CentOS/5/x86_64/ius-release-1.0-11.ius.centos5.noarch.rpm
+    rpm -Uvh http://dl.iuscommunity.org/pub/ius/stable/CentOS/5/x86_64/epel-release-5-4.noarch.rpm
 
 # http://thepoch.com/2013/installing-php-5.2-on-centos-5-using-the-ius-community-project-repository.html
 #    yum install php-5.2.14
-    yum --enablerepo=ius-archive -y install php52-5.2.17-6.ius.centos5
+    yum -y install php52-5.2.17-6.ius.centos5
 }
 
 function install_apc() {
@@ -36,4 +33,6 @@ function install_apc() {
     pecl install apc-3.1.9
 
     echo "extension=apc.so" > /etc/php.d/apc.ini
+
+    service httpd restart
 }
