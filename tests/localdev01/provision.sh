@@ -7,3 +7,4 @@ echo $0
 install_apache
 install_mysql
 install_php
+install_apc
