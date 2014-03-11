@@ -2,16 +2,26 @@
 
 function install_apache() {
 #    yum install apache-2.2.3
-    yum install httpd-2.2.3-82.el5.centos
+    yum -y install httpd-2.2.3-82.el5.centos
 }
 
 function install_mysql() {
 #    yum install mysql-5.5.16
-    yum install mysql55-mysql-5.5.32-3.el5
+    yum -y install mysql55-mysql-5.5.32-3.el5
 }
 
 function install_php() {
-    yum install php-5.2.14
+    cd /tmp
+
+    wget http://dl.iuscommunity.org/pub/ius/stable/CentOS/5/x86_64/ius-release-1.0-11.ius.centos5.noarch.rpm
+    wget http://dl.iuscommunity.org/pub/ius/stable/CentOS/5/x86_64/epel-release-5-4.noarch.rpm
+
+    rpm -Uvh ius-release-1.0-11.ius.centos5.noarch.rpm epel-release-5-4.noarch.rpm
+
+    cd -
+
+#    yum install php-5.2.14
+    yum -y install php52-5.2.17-6.ius.centos5
 }
 
 function install_apc() {
