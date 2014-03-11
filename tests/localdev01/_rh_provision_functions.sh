@@ -7,7 +7,7 @@ function install_apache() {
 
 function install_mysql() {
 #    yum install mysql-5.5.16
-    yum -y install mysql55-mysql-5.5.32-3.el5
+    yum -y install mysql55-mysql-5.5.32-3.el5 mysql55-mysql-server-5.5.32-3.el5
 }
 
 function install_php() {
@@ -26,9 +26,12 @@ function install_php() {
 }
 
 function install_apc() {
-    yum install php-devel-5.2.14
-    yum install httpd-devel-2.2.3
-    yum install php-pear pcre-devel gcc make
+    _php_version=`yum list installed | grep php | awk '{print $2}' | head -1`
+    _httpd_version=`yum list installed | grep httpd | awk '{print $2}' | head -1`
+
+    yum -y --enablerepo=ius-archive install php52-devel-${_php_version}
+    yum -y install httpd-devel-${_httpd_version}
+    yum -y install php-pear pcre-devel gcc make
 
     pecl install apc-3.1.9
 
