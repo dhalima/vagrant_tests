@@ -52,6 +52,7 @@ function install_mysql() {
 }
 
 function install_phpadmin() {
+# http://vpsshell.co.uk/index.php/centosrhel-lamp-apache-php-and-mysql-in-linux/
 	_y_install --enablerepo=ius-archive phpmyadmin
     }
 
@@ -62,16 +63,18 @@ function install_php() {
 }
 
 function install_apc() {
-    _php_version=`yum list installed | grep php | awk '{print $2}' | head -1`
-    _httpd_version=`yum list installed | grep httpd | awk '{print $2}' | head -1`
-
-    _y_install --enablerepo=ius-archive php52-devel-${_php_version}
-    _y_install httpd-devel-${_httpd_version}
-    _y_install php-pear pcre-devel gcc make
-
-    pecl install apc-3.1.9
-
-    echo "extension=apc.so" > /etc/php.d/apc.ini
-
-    service httpd restart
+    if ! pecl list | grep -i apc; then
+	_php_version=`yum list installed | grep php | awk '{print $2}' | head -1`
+	_httpd_version=`yum list installed | grep httpd | awk '{print $2}' | head -1`
+	
+	_y_install --enablerepo=ius-archive php52-devel-${_php_version}
+	_y_install httpd-devel-${_httpd_version}
+	_y_install php-pear pcre-devel gcc make
+	
+	pecl install apc-3.1.9
+	
+	echo "extension=apc.so" > /etc/php.d/apc.ini
+	
+	service httpd restart
+    fi
 }
