@@ -6,7 +6,7 @@ function _y_install() {
     # http://www.linuxjournal.com/article/8919
     _package_name=`echo ${_package_name_and_version%*-*-*}` # removes majorVersion-minorVersion from the right
 
-    echo "package name ${_package_name}"
+    #echo "package name ${_package_name}"
 
     if ! yum list installed | grep -i "^${_package_name}"; then
 	yum --enablerepo=ius-archive -y install $*
@@ -41,13 +41,16 @@ function install_apache() {
 #    yum install apache-2.2.3
     if _y_install httpd-2.2.3-82.el5.centos; then
 	/sbin/chkconfig httpd on
+	service httpd start
     fi
 }
 
 function install_mysql() {
 #    yum install mysql-5.5.16
-    if _y_install mysql55-5.5.30-1.ius.centos5; then
-	/sbin/chkconfig mysqld on
+    _y_install mysql55-5.5.30-1.ius.centos5
+    if _y_install mysql55-mysql-server-5.5.36-2.el5; then
+	/sbin/chkconfig mysql55-mysqld on
+	service mysql55-mysqld start
     fi
 }
 
