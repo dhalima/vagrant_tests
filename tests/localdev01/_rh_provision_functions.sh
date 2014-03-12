@@ -49,7 +49,7 @@ function install_apache() {
 	service httpd start
     fi
 
-    #if _y_install mod_ssl; then
+    if _y_install mod_ssl; then
 # http://wiki.centos.org/HowTos/Https
 	mkdir certificates
 	cd certificates
@@ -70,7 +70,7 @@ function install_apache() {
 	sed -i.bak 's/\(^SSLCertificateKeyFile .*\)/SSLCertificateKeyFile \/etc\/pki\/tls\/private\/ss_ca.key\n#\1/g' /etc/httpd/conf.d/ssl.conf
 
 	service httpd restart
-    #fi
+    fi
 }
 
 function install_mysql() {
