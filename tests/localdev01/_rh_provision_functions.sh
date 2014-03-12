@@ -36,36 +36,59 @@ function prepare() {
     _y_install yum-fastestmirror
 }
 
+function install_openssl() {
+    _y_install openssl
+}
 
 function install_apache() {
-#    yum install apache-2.2.3
-    if _y_install httpd-2.2.3-82.el5.centos; then
+# apache-2.2.3 (httpd-2.2.3-82.el5.centos)
+    if _y_install httpd-2.2.3-83.el5.centos; then
 	/sbin/chkconfig httpd on
 	service httpd start
     fi
+
+    #if _y_install mod_ssl; then
+# http://wiki.centos.org/HowTos/Https
+	mkdir certificates
+	cd certificates
+
+	_hostname=`hostname`
+
+	openssl genrsa -out ss_ca.key 2048 
+	openssl req -new -key ss_ca.key -out ss_ca.csr -subj "/C=CO/ST=State/L=City/O=Company/OU=Department/CN=${_hostname}"
+	openssl x509 -req -days 365 -in ss_ca.csr -signkey ss_ca.key -out ss_ca.crt
+
+	cp ss_ca.crt /etc/pki/tls/certs
+	cp ss_ca.key /etc/pki/tls/private/ss_ca.key
+	cp ss_ca.csr /etc/pki/tls/private/ss_ca.csr
+
+	cd -
+
+	service httpd restart
+    #fi
 }
 
 function install_mysql() {
-#    yum install mysql-5.5.16
-    _y_install mysql55-5.5.30-1.ius.centos5
-    if _y_install mysql55-mysql-server-5.5.36-2.el5; then
-	/sbin/chkconfig mysql55-mysqld on
-	service mysql55-mysqld start
+# mysql-5.5.16 (mysql55-5.5.30-1.ius.centos5)
+    _y_install mysql55-5.5.36-1.ius.centos5
+    if _y_install mysql55-server-5.5.36-1.ius.centos5; then
+	/sbin/chkconfig mysqld on
+	service mysqld start
     fi
 }
 
-function install_phpadmin() {
+function install_php_admin() {
 # http://vpsshell.co.uk/index.php/centosrhel-lamp-apache-php-and-mysql-in-linux/
 	_y_install phpmyadmin
     }
 
 function install_php() {
 # http://thepoch.com/2013/installing-php-5.2-on-centos-5-using-the-ius-community-project-repository.html
-#    yum install php-5.2.14
+# php-5.2.14 (php52-5.2.17-6.ius.centos5)
     _y_install php52-5.2.17-6.ius.centos5
 }
 
-function install_apc() {
+function install_php_pear() {
     if ! yum list installed | grep -i 'php-pear'; then
 	_php_version=`yum list installed | grep php | awk '{print $2}' | head -1`
 	_httpd_version=`yum list installed | grep httpd | awk '{print $2}' | head -1`
@@ -77,7 +100,9 @@ function install_apc() {
 	_y_install gcc
 	_y_install make
     fi
+}
 
+function install_apc() {
     if ! pecl list | grep -i apc; then		
 	pecl install apc-3.1.9
 	
