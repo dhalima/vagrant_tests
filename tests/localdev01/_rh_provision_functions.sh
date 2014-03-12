@@ -35,6 +35,7 @@ function prepare() {
 
     _y_install yum-fastestmirror
     _y_install unzip
+    _y_install telnet
 }
 
 function install_openssl() {
@@ -64,6 +65,9 @@ function install_apache() {
 	cp ss_ca.csr /etc/pki/tls/private/ss_ca.csr
 
 	cd -
+
+	sed -i.bak 's/\(^SSLCertificateFile .*\)/SSLCertificateFile \/etc\/pki\/tls\/certs\/ss_ca.crt\n#\1/g' /etc/httpd/conf.d/ssl.conf
+	sed -i.bak 's/\(^SSLCertificateKeyFile .*\)/SSLCertificateKeyFile \/etc\/pki\/tls\/private\/ss_ca.key\n#\1/g' /etc/httpd/conf.d/ssl.conf
 
 	service httpd restart
     #fi
