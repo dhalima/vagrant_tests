@@ -34,6 +34,7 @@ function prepare() {
     _rpm http://dl.iuscommunity.org/pub/ius/stable/CentOS/5/x86_64/ius-release-1.0-11.ius.centos5.noarch.rpm
 
     _y_install yum-fastestmirror
+    _y_install unzip
 }
 
 function install_openssl() {
