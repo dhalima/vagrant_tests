@@ -133,6 +133,8 @@ function dev_change_apache() {
 
 
 function dev_change_smtp_server() {
+    # http://wiki.centos.org/HowTos/postfix
+    # http://www.linuxquestions.org/questions/red-hat-31/can%27t-change-default-mta-centos-6-a-929303/
     if _y_install postfix; then
 	if ! yum list installed | grep -i '^sendmail'; then
 	    yum erase sendmail
