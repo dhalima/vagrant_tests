@@ -102,8 +102,31 @@ function install_apc() {
     fi
 }
 
-function dev_change_apache() {
+function dev_change_udev() {
+    _y_install screen
 
+    if [ ! -f /etc/udev/rules.d/50-vagrant-mount.rules ]; then
+	_start_cmd="sleep 5"
+	_stop_cmd="sleep 5"
+
+	for _service in httpd mysql; do
+	    if ! yum list installed | grep -i "^${_service}"; then
+		_start_cmd="${_start_cmd}; /sbin/service/${_service} start"
+		_stop_cmd="${_stop_cmd}; /sbin/service/${_service} stop"
+	    fi
+	done
+
+	cat << EOF > /etc/udev/rules.d/50-vagrant-mount.rules
+# Start on mount
+SUBSYSTEM=="bdi",ACTION=="add",RUN+="/usr/bin/screen -m -d bash -c '${_start_cmd}'"
+# Stop on unmount
+SUBSYSTEM=="bdi",ACTION=="remove",RUN+="/usr/bin/screen -m -d bash -c '${_stop_cmd}'"
+EOF
+	
+    fi
+}
+
+function dev_change_apache() {
     if yum list installed | grep -i '^mod_ssl'; then
 
 # http://wiki.centos.org/HowTos/Https
@@ -126,9 +149,7 @@ function dev_change_apache() {
 	sed -i.bak 's/\(^SSLCertificateKeyFile .*\)/SSLCertificateKeyFile \/etc\/pki\/tls\/private\/ss_ca.key\n#\1/g' /etc/httpd/conf.d/ssl.conf
 
 	service httpd restart
-
     fi
-
 }
 
 
@@ -181,7 +202,5 @@ EOF
 	chmod 0600 /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db
 	
 	service postfix restart
-    fi
-
-    
+    fi   
 }
