@@ -135,14 +135,53 @@ function dev_change_apache() {
 function dev_change_smtp_server() {
     # http://wiki.centos.org/HowTos/postfix
     # http://www.linuxquestions.org/questions/red-hat-31/can%27t-change-default-mta-centos-6-a-929303/
+    # http://charlesauer.net/tutorials/centos/postfix-as-gmail-relay-centos.php
+
     if _y_install postfix; then
 	if ! yum list installed | grep -i '^sendmail'; then
 	    yum erase sendmail
 	fi
-
-
+	
 	/sbin/chkconfig postfix on
 	service postfix start
     fi
+
+    if ! grep -i --no-messages --quiet '\[smtp\.gmail\.com\]:587' /etc/postfix/sasl_passwd /etc/postfix/main.cf; then
+# smtp.gmail.com doesn't appear in any config file
+
+	mkdir /etc/postfix
+	
+	cat << EOF >> /etc/postfix/sasl_passwd
+[smtp.gmail.com]:587     your_gmail_address:your_gmail_password
+EOF
+		
+	cat << EOF >> /etc/postfix/main.cf
+#relayhost = [smtp.gmail.com]:587
+relayhost = [aspmx.l.google.com]:25
+smtp_sasl_auth_enable = no
+#smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options = anonymous
+#smtp_sasl_security_options = noanonymous
+# Secure channel TLS with exact nexthop name match.
+smtp_tls_security_level = secure
+smtp_tls_mandatory_protocols = TLSv1
+smtp_tls_mandatory_ciphers = high
+smtp_tls_secure_cert_match = nexthop
+smtp_tls_CAfile = /etc/pki/tls/certs/ca-bundle.crt
+mynetworks = 192.168.0.0/24 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+EOF
+	
+	postmap /etc/postfix/transport
+	
+	postmap /etc/postfix/sasl_passwd
+	
+	chown root:root /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db
+	
+	chmod 0600 /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db
+	
+	service postfix restart
+    fi
+
     
 }
