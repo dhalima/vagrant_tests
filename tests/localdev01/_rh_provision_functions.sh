@@ -90,7 +90,12 @@ function install_php_admin() {
 function install_php() {
 # http://thepoch.com/2013/installing-php-5.2-on-centos-5-using-the-ius-community-project-repository.html
 # php-5.2.14 (php52-5.2.17-6.ius.centos5)
-    _y_install php52-5.2.17-6.ius.centos5
+    if _y_install php52-5.2.17-6.ius.centos5; then
+	_y_install php52-xml
+	_y_install php52-ldap
+	_y_install php52-mhash
+	_y_install php52-soap
+    fi
 }
 
 function install_php_pear() {
