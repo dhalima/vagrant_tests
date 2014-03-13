@@ -109,8 +109,8 @@ function dev_change_udev() {
 	_start_cmd="sleep 5"
 	_stop_cmd="sleep 5"
 
-	for _service in httpd mysql; do
-	    if ! yum list installed | grep -i "^${_service}"; then
+	for _service in mysql httpd ; do
+	    if yum list installed 2>/dev/null | grep --quiet -i "^${_service}"; then
 		_start_cmd="${_start_cmd}; /sbin/service/${_service} start"
 		_stop_cmd="${_stop_cmd}; /sbin/service/${_service} stop"
 	    fi
@@ -129,26 +129,29 @@ EOF
 function dev_change_apache() {
     if yum list installed | grep -i '^mod_ssl'; then
 
+	if [ ! -f /etc/pki/tls/certs/ss_ca.crt ]; then
+
 # http://wiki.centos.org/HowTos/Https
-	mkdir certificates
-	cd certificates
-
-	_hostname=`hostname`
-
-	openssl genrsa -out ss_ca.key 2048 
-	openssl req -new -key ss_ca.key -out ss_ca.csr -subj "/C=CO/ST=State/L=City/O=Company/OU=Department/CN=${_hostname}"
-	openssl x509 -req -days 365 -in ss_ca.csr -signkey ss_ca.key -out ss_ca.crt
-
-	cp ss_ca.crt /etc/pki/tls/certs
-	cp ss_ca.key /etc/pki/tls/private/ss_ca.key
-	cp ss_ca.csr /etc/pki/tls/private/ss_ca.csr
-
-	cd -
-
-	sed -i.bak 's/\(^SSLCertificateFile .*\)/SSLCertificateFile \/etc\/pki\/tls\/certs\/ss_ca.crt\n#\1/g' /etc/httpd/conf.d/ssl.conf
-	sed -i.bak 's/\(^SSLCertificateKeyFile .*\)/SSLCertificateKeyFile \/etc\/pki\/tls\/private\/ss_ca.key\n#\1/g' /etc/httpd/conf.d/ssl.conf
-
-	service httpd restart
+	    mkdir certificates
+	    cd certificates
+	    
+	    _hostname=`hostname`
+	    
+	    openssl genrsa -out ss_ca.key 2048 
+	    openssl req -new -key ss_ca.key -out ss_ca.csr -subj "/C=CO/ST=State/L=City/O=Company/OU=Department/CN=${_hostname}"
+	    openssl x509 -req -days 365 -in ss_ca.csr -signkey ss_ca.key -out ss_ca.crt
+	    
+	    cp ss_ca.crt /etc/pki/tls/certs
+	    cp ss_ca.key /etc/pki/tls/private/ss_ca.key
+	    cp ss_ca.csr /etc/pki/tls/private/ss_ca.csr
+	    
+	    cd -
+	    
+	    sed -i.bak 's/\(^SSLCertificateFile .*\)/SSLCertificateFile \/etc\/pki\/tls\/certs\/ss_ca.crt\n#\1/g' /etc/httpd/conf.d/ssl.conf
+	    sed -i.bak 's/\(^SSLCertificateKeyFile .*\)/SSLCertificateKeyFile \/etc\/pki\/tls\/private\/ss_ca.key\n#\1/g' /etc/httpd/conf.d/ssl.conf
+	    
+	    service httpd restart
+	fi
     fi
 }
 
