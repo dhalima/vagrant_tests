@@ -49,31 +49,11 @@ function install_apache() {
 	service httpd start
     fi
 
-    if _y_install mod_ssl; then
-# http://wiki.centos.org/HowTos/Https
-	mkdir certificates
-	cd certificates
-
-	_hostname=`hostname`
-
-	openssl genrsa -out ss_ca.key 2048 
-	openssl req -new -key ss_ca.key -out ss_ca.csr -subj "/C=CO/ST=State/L=City/O=Company/OU=Department/CN=${_hostname}"
-	openssl x509 -req -days 365 -in ss_ca.csr -signkey ss_ca.key -out ss_ca.crt
-
-	cp ss_ca.crt /etc/pki/tls/certs
-	cp ss_ca.key /etc/pki/tls/private/ss_ca.key
-	cp ss_ca.csr /etc/pki/tls/private/ss_ca.csr
-
-	cd -
-
-	sed -i.bak 's/\(^SSLCertificateFile .*\)/SSLCertificateFile \/etc\/pki\/tls\/certs\/ss_ca.crt\n#\1/g' /etc/httpd/conf.d/ssl.conf
-	sed -i.bak 's/\(^SSLCertificateKeyFile .*\)/SSLCertificateKeyFile \/etc\/pki\/tls\/private\/ss_ca.key\n#\1/g' /etc/httpd/conf.d/ssl.conf
-
-	service httpd restart
-    fi
+    _y_install mod_ssl
 }
 
-function install_mysql() {
+
+function install_mysql55() {
 # mysql-5.5.16 (mysql55-5.5.30-1.ius.centos5)
     _y_install mysql55-5.5.36-1.ius.centos5
     if _y_install mysql55-server-5.5.36-1.ius.centos5; then
@@ -87,7 +67,7 @@ function install_php_admin() {
 	_y_install phpmyadmin
     }
 
-function install_php() {
+function install_php52() {
 # http://thepoch.com/2013/installing-php-5.2-on-centos-5-using-the-ius-community-project-repository.html
 # php-5.2.14 (php52-5.2.17-6.ius.centos5)
     if _y_install php52-5.2.17-6.ius.centos5; then
@@ -98,7 +78,7 @@ function install_php() {
     fi
 }
 
-function install_php_pear() {
+function install_php52_pear() {
     if ! yum list installed | grep -i 'php-pear'; then
 	_php_version=`yum list installed | grep php | awk '{print $2}' | head -1`
 	_httpd_version=`yum list installed | grep httpd | awk '{print $2}' | head -1`
@@ -120,4 +100,47 @@ function install_apc() {
 	
 	service httpd restart
     fi
+}
+
+function dev_change_apache() {
+
+    if yum list installed | grep -i '^mod_ssl'; then
+
+# http://wiki.centos.org/HowTos/Https
+	mkdir certificates
+	cd certificates
+
+	_hostname=`hostname`
+
+	openssl genrsa -out ss_ca.key 2048 
+	openssl req -new -key ss_ca.key -out ss_ca.csr -subj "/C=CO/ST=State/L=City/O=Company/OU=Department/CN=${_hostname}"
+	openssl x509 -req -days 365 -in ss_ca.csr -signkey ss_ca.key -out ss_ca.crt
+
+	cp ss_ca.crt /etc/pki/tls/certs
+	cp ss_ca.key /etc/pki/tls/private/ss_ca.key
+	cp ss_ca.csr /etc/pki/tls/private/ss_ca.csr
+
+	cd -
+
+	sed -i.bak 's/\(^SSLCertificateFile .*\)/SSLCertificateFile \/etc\/pki\/tls\/certs\/ss_ca.crt\n#\1/g' /etc/httpd/conf.d/ssl.conf
+	sed -i.bak 's/\(^SSLCertificateKeyFile .*\)/SSLCertificateKeyFile \/etc\/pki\/tls\/private\/ss_ca.key\n#\1/g' /etc/httpd/conf.d/ssl.conf
+
+	service httpd restart
+
+    fi
+
+}
+
+
+function dev_change_smtp_server() {
+    if _y_install postfix; then
+	if ! yum list installed | grep -i '^sendmail'; then
+	    yum erase sendmail
+	fi
+
+
+	/sbin/chkconfig postfix on
+	service postfix start
+    fi
+    
 }
