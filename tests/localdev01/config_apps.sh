@@ -55,3 +55,5 @@ export -f _configure_host _configure_apache _configure_mysql
 find /vagrant/apps/conf -name '*.hosts' -type f -print0 | xargs -I {} -0 bash -c '_configure_host "$@"' _ {}
 find /vagrant/apps/conf -name '*.apache' -type f -print0 | xargs -I {} -0 bash -c '_configure_apache "$@"' _ {}
 find /vagrant/apps/dump -name '*.mysql' -type f -print0 | xargs -I {} -0 bash -c '_configure_mysql "$@"' _ {}
+
+/sbin/service httpd restart
