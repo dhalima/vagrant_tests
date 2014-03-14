@@ -124,4 +124,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #   chef.validation_client_name = "ORGNAME-validator"
 
   config.vm.provision :shell, :path => "provision.sh"
+
+  {
+    :up       => "sudo /sbin/service httpd start",
+    :reload   => "sudo /sbin/service httpd start",
+  }.each do |command, trigger|
+    config.trigger.after command, :execute => "vagrant ssh -c \"#{trigger}\"", :stdout => true
+  end
 end
