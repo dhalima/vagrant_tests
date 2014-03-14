@@ -118,9 +118,9 @@ function dev_change_udev() {
 
 	cat << EOF > /etc/udev/rules.d/50-vagrant-mount.rules
 # Start on mount
-SUBSYSTEM=="bdi",ACTION=="add",RUN+="/usr/bin/screen -m -d bash -c '${_start_cmd}'"
+SUBSYSTEM=="bdi",ACTION=="add",RUN+="${_start_cmd}"
 # Stop on unmount
-SUBSYSTEM=="bdi",ACTION=="remove",RUN+="/usr/bin/screen -m -d bash -c '${_stop_cmd}'"
+SUBSYSTEM=="bdi",ACTION=="remove",RUN+="${_stop_cmd}"
 EOF
 	
     fi
