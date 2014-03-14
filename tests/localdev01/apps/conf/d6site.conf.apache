@@ -1,13 +1,13 @@
 <VirtualHost *:80>
 
-	DocumentRoot /vagrant_www/drupal/
+	DocumentRoot /vagrant_www/d6site/
 
   ServerName drupal.local
   ServerAlias www.drupal.local
 
   RewriteEngine on
 
-  <Directory "/vagrant_www/drupal/">
+  <Directory "/vagrant_www/d6site/">
     Options FollowSymLinks
     AllowOverride all
     Order allow,deny
@@ -33,12 +33,12 @@
 	SSLCertificateFile    /etc/pki/tls/certs/ss_ca.crt
 	SSLCertificateKeyFile /etc/pki/tls/private/ss_ca.key
 
-        DocumentRoot /vagrant_www/drupal/
+        DocumentRoot /vagrant_www/d6site/
         <Directory />
                 Options FollowSymLinks
                 AllowOverride All
         </Directory>
-        <Directory /vagrant_www/drupal>
+        <Directory /vagrant_www/d6site>
                 Options Indexes FollowSymLinks MultiViews
                 AllowOverride All
                 Order allow,deny
@@ -53,11 +53,11 @@
                 Allow from all
         </Directory>
 
-        ErrorLog /vagrant/apps/log/drupal_error.log
+        ErrorLog /vagrant/apps/log/d6site_error.log
 
         # Possible values include: debug, info, notice, warn, error, crit,
         # alert, emerg.
         LogLevel warn
 
-        CustomLog /vagrant/apps/log/drupal_access.log combined
+        CustomLog /vagrant/apps/log/d6site_access.log combined
 </VirtualHost>
