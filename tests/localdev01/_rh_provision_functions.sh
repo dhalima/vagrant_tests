@@ -102,29 +102,6 @@ function install_apc() {
     fi
 }
 
-function dev_change_udev() {
-    _y_install screen
-
-    if [ ! -f /etc/udev/rules.d/50-vagrant-mount.rules ]; then
-	_start_cmd="sleep 5"
-	_stop_cmd="sleep 5"
-
-	for _service in mysql httpd ; do
-	    if yum list installed 2>/dev/null | grep --quiet -i "^${_service}"; then
-		_start_cmd="${_start_cmd}; /sbin/service/${_service} start"
-		_stop_cmd="${_stop_cmd}; /sbin/service/${_service} stop"
-	    fi
-	done
-
-	cat << EOF > /etc/udev/rules.d/50-vagrant-mount.rules
-# Start on mount
-SUBSYSTEM=="bdi",ACTION=="add",RUN+="${_start_cmd}"
-# Stop on unmount
-SUBSYSTEM=="bdi",ACTION=="remove",RUN+="${_stop_cmd}"
-EOF
-	
-    fi
-}
 
 function dev_change_apache() {
     if yum list installed | grep -i '^mod_ssl'; then

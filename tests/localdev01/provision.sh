@@ -14,6 +14,5 @@ install_php52_pear
 install_apc
 
 # Dev enviroment tweaks
-dev_change_udev
 dev_change_apache
 dev_change_smtp_server
