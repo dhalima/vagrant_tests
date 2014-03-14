@@ -6,10 +6,14 @@ function _configure_host() {
     while read _line; do
 	if [ -n "${_line}" ]; then
 	    _hostname=`echo ${_line} | awk '{print $2}'`
-	    echo ${_hostname}
+	    #echo ${_hostname}
+	    sed -i.bak "s/\(.* ${_hostname}\)$/#\1/g" /etc/hosts	    
 	fi
     done < ${_host_path}
     
+    echo '' >> /etc/hosts
+    echo "# ${_host_path}" >> /etc/hosts
+    cat ${_host_path} >> /etc/hosts
 }
 
 function _configure_apache() {
