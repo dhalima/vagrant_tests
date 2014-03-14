@@ -1,5 +1,17 @@
 #!/bin/bash
 
+function _configure_host() {
+    _host_path=$1
+    
+    while read _line; do
+	if [ -n "${_line}" ]; then
+	    _hostname=`echo ${_line} | awk '{print $2}'`
+	    echo ${_hostname}
+	fi
+    done < ${_host_path}
+    
+}
+
 function _configure_apache() {
     _conf_path=$1
     _conf_name=`basename ${_conf_path}`
@@ -26,27 +38,16 @@ function _configure_mysql() {
 CREATE USER '${_user}'@'localhost' IDENTIFIED BY '${_user}';
 CREATE DATABASE ${_user};
 GRANT ALL PRIVILEGES ON ${_user}.* TO '${_user}'@'localhost';
+FLUSH PRIVILEGES;
 END
     
 	cat ${_dump_path} | mysql -u ${_user} -p${_user} ${_user}
     fi
 }
 
-export -f _configure_apache _configure_mysql
+export -f _configure_host _configure_apache _configure_mysql
 
 #find sites/conf -name '*.apache' -type f -print0 | xargs -I {} -0 bash -c '_configure_apache "$@"' _ {}
+find /vagrant/apps/conf -name '*.hosts' -type f -print0 | xargs -I {} -0 bash -c '_configure_host "$@"' _ {}
 find /vagrant/apps/conf -name '*.apache' -type f -print0 | xargs -I {} -0 bash -c '_configure_apache "$@"' _ {}
 find /vagrant/apps/dump -name '*.mysql' -type f -print0 | xargs -I {} -0 bash -c '_configure_mysql "$@"' _ {}
-
-
-#CREATE USER 'drupal'@'localhost' IDENTIFIED BY 'drupal';
-
-#CREATE DATABASE drupal;
-
-
-
-#GRANT ALL PRIVILEGES ON drupal.* TO 'drupal'@'localhost';
-
-
-
-#FLUSH PRIVILEGES;
