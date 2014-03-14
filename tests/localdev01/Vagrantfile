@@ -44,8 +44,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
   # http://stackoverflow.com/questions/17966365/vagrant-chicken-and-egg-shared-folder-with-uid-apache-user
-  #config.vm.synced_folder "sites/www", "/vagrant_www", owner: "apache", group: "apache"
-  config.vm.synced_folder "sites/www", "/vagrant_www", :mount_options => ["uid=48,gid=48"]
+  #config.vm.synced_folder "apps/www", "/vagrant_www", owner: "apache", group: "apache"
+  config.vm.synced_folder "apps/www", "/vagrant_www", :mount_options => ["uid=48,gid=48"]
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -123,7 +123,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   #   chef.validation_client_name = "ORGNAME-validator"
 
-  config.vm.provision :shell, :path => "provision.sh"
+  #config.vm.provision :shell, :path => "provision.sh"
+  config.vm.provision :shell, :path => "config_apps.sh"
 
   {
     :up       => "sudo /sbin/service httpd start",
@@ -131,4 +132,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   }.each do |command, trigger|
     config.trigger.after command, :execute => "vagrant ssh -c \"#{trigger}\"", :stdout => true
   end
+
 end

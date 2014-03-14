@@ -53,11 +53,11 @@
                 Allow from all
         </Directory>
 
-        ErrorLog /vagrant/sites/logs/drupal_error.log
+        ErrorLog /vagrant/apps/log/drupal_error.log
 
         # Possible values include: debug, info, notice, warn, error, crit,
         # alert, emerg.
         LogLevel warn
 
-        CustomLog /vagrant/sites/logs/drupal_access.log combined
+        CustomLog /vagrant/apps/log/drupal_access.log combined
 </VirtualHost>
